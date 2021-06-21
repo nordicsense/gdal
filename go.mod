@@ -1,3 +1,3 @@
-module github.com/lukeroth/gdal
+module github.com/nordicsense/gdal
 
 go 1.15
