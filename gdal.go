@@ -775,6 +775,29 @@ func (object *Dataset) MetadataItem(name, domain string) string {
 	)
 }
 
+func (object *RasterBand) Metadata(domain string) []string {
+	cDomain := C.CString(domain)
+	defer C.free(unsafe.Pointer(cDomain))
+
+	p := C.GDALGetMetadata(
+		C.GDALMajorObjectH(unsafe.Pointer(object.cval)),
+		cDomain,
+	)
+	var strings []string
+	q := uintptr(unsafe.Pointer(p))
+	for {
+		p = (**C.char)(unsafe.Pointer(q))
+		if p == nil || *p == nil {
+			break
+		}
+		strings = append(strings, C.GoString(*p))
+		q += unsafe.Sizeof(q)
+	}
+
+	return strings
+}
+
+
 func (object *RasterBand) MetadataItem(name, domain string) string {
 	c_name := C.CString(name)
 	defer C.free(unsafe.Pointer(c_name))
